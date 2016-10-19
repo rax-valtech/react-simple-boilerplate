@@ -1,10 +1,13 @@
 import React, {Component} from "react";
+
+import Container from "./Dnd/Container.js";
+
 import "./App.scss";
 
 class App extends Component {
   render() {
     return (
-      <h1>Hello React</h1>
+        <Container />
     );
   }
 }
