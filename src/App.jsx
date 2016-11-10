@@ -1,10 +1,14 @@
 import React, {Component} from "react";
+
 import "./App.scss";
+import MyEditor from "./MyEditor.jsx";
 
 class App extends Component {
   render() {
     return (
-      <h1>Hello React</h1>
+      <div>
+        <MyEditor />
+      </div>
     );
   }
 }
