@@ -1,5 +1,5 @@
 import React, { PropTypes } from "react";
-import Draft, { Editor, EditorState, convertFromRaw } from "draft-js";
+import Draft, { Editor, EditorState, convertFromRaw, SelectionState } from "draft-js";
 import Immutable from "immutable";
 
 class MyCustomBlock extends React.Component {
@@ -54,12 +54,30 @@ const blocks = convertFromRaw(rawContent);
 export default class MyEditor extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    const state = {
       editorState: EditorState.createWithContent(
         blocks
       )
     };
-    this.onChange = (editorState) => this.setState({ editorState });
+    this.state = state;
+    this.onChange = (editorState) => {
+      let selection = editorState.getSelection();
+      const anchorKey = selection.getAnchorKey();
+      const currentContent = editorState.getCurrentContent();
+      const currentBlock = currentContent.getBlockForKey(anchorKey);
+
+      const start = selection.getStartOffset();
+      const end = selection.getEndOffset();
+      const selectedText = currentBlock.getText().slice(start, end);
+
+      console.log(selectedText);
+
+      this.setState({ editorState })
+    };
+
+    const firstBlockKey = Object.keys(blocks.get("blockMap").toJS())[0];
+    const block = state.editorState.getCurrentContent().getBlockForKey(firstBlockKey);
+    console.log(block);
   }
   render() {
     const {editorState} = this.state;
