@@ -1,5 +1,5 @@
 import React, { PropTypes } from "react";
-import Draft, { Editor, EditorState, convertFromRaw, SelectionState } from "draft-js";
+import Draft, { Editor, EditorState, convertFromRaw, RichUtils, Entity } from "draft-js";
 import Immutable from "immutable";
 
 class MyCustomBlock extends React.Component {
@@ -79,8 +79,16 @@ export default class MyEditor extends React.Component {
     const block = state.editorState.getCurrentContent().getBlockForKey(firstBlockKey);
     console.log(block);
   }
+  handleKeyCommand(command) {
+    console.log(command);
+  }
   render() {
     const {editorState} = this.state;
-    return <Editor editorState={editorState} onChange={this.onChange} blockRenderMap={extendedBlockRenderMap} />;
+    return <Editor
+      editorState={editorState}
+      onChange={this.onChange}
+      blockRenderMap={extendedBlockRenderMap}
+      handleKeyCommand={this.handleKeyCommand}
+    />;
   }
 }
