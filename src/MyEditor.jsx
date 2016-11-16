@@ -1,5 +1,5 @@
 import React, { PropTypes } from "react";
-import Draft, { Editor, EditorState, convertFromRaw, RichUtils, Entity } from "draft-js";
+import Draft, { Editor, EditorState, convertFromRaw, CompositeDecorator, Entity } from "draft-js";
 import Immutable from "immutable";
 
 class MyCustomBlock extends React.Component {
@@ -46,24 +46,66 @@ const rawContent = {
           offset: 15,
           style: "BOLD"
         }
-      ]
-    }, {
+      ],
+      entityRanges: [
+        { key: 0, length: 40, offset: 0 }]
+      },
+    {
       text: ("This block is unstyled"),
       type: "unstyled"
     }],
   entityMap: {
-
+    0: {
+      data: {
+        url: "http://www.idg.se"
+      },
+      type: "LINK",
+      mutability: "mutable"
+    }
   }
 };
 
 const blocks = convertFromRaw(rawContent);
+
+
+function findLinkEntities(contentBlock, callback) {
+  contentBlock.findEntityRanges(
+    (character) => {
+      const entityKey = character.getEntity();
+      return (
+        entityKey !== null &&
+        Entity.get(entityKey).getType() === "LINK"
+      );
+    },
+    callback
+  );
+}
+
+export const LinkDecoratorComponent = (props) => (
+  <a href={ Entity.get(props.entityKey).data.url }>
+    { props.children }
+  </a>
+);
+
+LinkDecoratorComponent.propTypes = {
+  children: PropTypes.any,
+  entityKey: PropTypes.any
+}
+
+const LinkDecorator = {
+  strategy: findLinkEntities,
+  component: LinkDecoratorComponent
+};
+
+const decorator = new CompositeDecorator([ LinkDecorator ]);
 
 export default class MyEditor extends React.Component {
   constructor(props) {
     super(props);
     const state = {
       editorState: EditorState.createWithContent(
-        blocks
+        blocks,
+        decorator
       )
     };
     this.state = state;
@@ -78,6 +120,13 @@ export default class MyEditor extends React.Component {
       const selectedText = currentBlock.getText().slice(start, end);
 
       console.log(selectedText);
+
+      const linkKey = currentBlock.getEntityAt(start);
+      if(linkKey) {
+        console.log(Entity.get(linkKey).getData());
+      } else {
+        console.log("no entity found");
+      }
 
       this.setState({ editorState })
     };
