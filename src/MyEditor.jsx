@@ -39,7 +39,14 @@ const rawContent = {
         "characters will delete the entire entity. Adding characters " +
         "will remove the entity from the range."
       ),
-      type: "my-custom-block"
+      type: "my-custom-block",
+      inlineStyleRanges: [
+        {
+          length: 30,
+          offset: 15,
+          style: "BOLD"
+        }
+      ]
     }, {
       text: ("This block is unstyled"),
       type: "unstyled"
