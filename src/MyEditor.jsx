@@ -2,9 +2,9 @@ import React from "react";
 import Draft, { Editor, EditorState, convertFromRaw, CompositeDecorator, Entity } from "draft-js";
 
 import LinkDecorator from "./Decorator.jsx";
-import blockRenderMap from "./BlockRenderMap.js";
+import customBlockRenderMap from "./customBlockRenderMap.js";
 
-const extendedBlockRenderMap = Draft.DefaultDraftBlockRenderMap.merge(blockRenderMap);
+const extendedBlockRenderMap = Draft.DefaultDraftBlockRenderMap.merge(customBlockRenderMap);
 
 const rawContent = {
   blocks: [
@@ -27,7 +27,7 @@ const rawContent = {
       ],
       entityRanges: [
         { key: 0, length: 40, offset: 0 }]
-      },
+    },
     {
       text: ("This block is unstyled"),
       type: "unstyled"
@@ -44,8 +44,7 @@ const rawContent = {
 };
 
 const blocks = convertFromRaw(rawContent);
-
-const decorator = new CompositeDecorator([ LinkDecorator ]);
+const decorator = new CompositeDecorator([LinkDecorator]);
 
 export default class MyEditor extends React.Component {
   constructor(props) {
@@ -57,32 +56,29 @@ export default class MyEditor extends React.Component {
       )
     };
     this.state = state;
-    this.onChange = (editorState) => {
-      let selection = editorState.getSelection();
-      const anchorKey = selection.getAnchorKey();
-      const currentContent = editorState.getCurrentContent();
-      const currentBlock = currentContent.getBlockForKey(anchorKey);
-
-      const start = selection.getStartOffset();
-      const end = selection.getEndOffset();
-      const selectedText = currentBlock.getText().slice(start, end);
-
-      console.log(selectedText);
-
-      const linkKey = currentBlock.getEntityAt(start);
-      if(linkKey) {
-        console.log(Entity.get(linkKey).getData());
-      } else {
-        console.log("no entity found");
-      }
-
-      this.setState({ editorState })
-    };
-
-    const firstBlockKey = Object.keys(blocks.get("blockMap").toJS())[0];
-    const block = state.editorState.getCurrentContent().getBlockForKey(firstBlockKey);
-    console.log(block);
   }
+
+  onChange(editorState) {
+    let selection = editorState.getSelection();
+    const anchorKey = selection.getAnchorKey();
+    const currentContent = editorState.getCurrentContent();
+    const currentBlock = currentContent.getBlockForKey(anchorKey);
+    const start = selection.getStartOffset();
+    const end = selection.getEndOffset();
+    const selectedText = currentBlock.getText().slice(start, end);
+
+    console.log(selectedText);
+
+    const linkKey = currentBlock.getEntityAt(start);
+    if (linkKey) {
+      console.log(Entity.get(linkKey).getData());
+    } else {
+      console.log("no entity found");
+    }
+
+    this.setState({ editorState })
+  }
+
   handleKeyCommand(command) {
     console.log(command);
   }
@@ -93,6 +89,6 @@ export default class MyEditor extends React.Component {
       onChange={this.onChange}
       blockRenderMap={extendedBlockRenderMap}
       handleKeyCommand={this.handleKeyCommand}
-    />;
+      />;
   }
 }

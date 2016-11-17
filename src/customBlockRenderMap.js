@@ -18,11 +18,11 @@ MyCustomBlock.propTypes = {
   children: PropTypes.any
 }
 
-const blockRenderMap = Immutable.Map({
+const customBlockRenderMap = Immutable.Map({
   "my-custom-block": {
     element: "section",
     wrapper: <MyCustomBlock />
   }
 });
 
-export default blockRenderMap;
+export default customBlockRenderMap;
