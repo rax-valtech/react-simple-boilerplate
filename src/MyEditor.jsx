@@ -1,5 +1,5 @@
 import React from "react";
-import Draft, { Editor, EditorState, convertFromRaw, CompositeDecorator, Entity } from "draft-js";
+import Draft, { Editor, EditorState, convertFromRaw, CompositeDecorator, Entity, Modifier, convertToRaw } from "draft-js";
 
 import LinkDecorator from "./Decorator.jsx";
 import customBlockRenderMap from "./customBlockRenderMap.js";
@@ -60,8 +60,8 @@ export default class MyEditor extends React.Component {
 
   onChange(editorState) {
     let selection = editorState.getSelection();
+    let currentContent = editorState.getCurrentContent();
     const anchorKey = selection.getAnchorKey();
-    const currentContent = editorState.getCurrentContent();
     const currentBlock = currentContent.getBlockForKey(anchorKey);
     const start = selection.getStartOffset();
     const end = selection.getEndOffset();
@@ -76,7 +76,15 @@ export default class MyEditor extends React.Component {
       console.log("no entity found");
     }
 
-    this.setState({ editorState })
+    currentContent = start !== end ? Modifier.applyEntity(
+      currentContent,
+      selection,
+      "1" // slå upp!!
+    ) : currentContent;
+
+    console.log(convertToRaw(currentContent));
+
+    this.setState({ editorState: EditorState.push(editorState, currentContent, "apply-entity") } );
   }
 
   handleKeyCommand(command) {
@@ -86,9 +94,24 @@ export default class MyEditor extends React.Component {
     const {editorState} = this.state;
     return <Editor
       editorState={editorState}
-      onChange={this.onChange}
+      onChange={this.onChange.bind(this)}
       blockRenderMap={extendedBlockRenderMap}
       handleKeyCommand={this.handleKeyCommand}
       />;
   }
 }
+
+
+
+
+// Skapa entity map entry
+
+    // const key = Entity.create("LINK", "MUTABLE", { href: "http://www.zombo.com" });
+
+    // currentContent = start !== end ? Modifier.applyEntity(
+    //   currentContent,
+    //   selection,
+    //   key
+    // ) : currentContent;
+
+    //EditorState.push(editorState, currentContent, "apply-entity")
