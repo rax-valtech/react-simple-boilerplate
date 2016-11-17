@@ -1,7 +1,6 @@
 import { Entity } from "draft-js";
 import React, { PropTypes } from "react";
 
-
 function findLinkEntities(contentBlock, callback) {
   contentBlock.findEntityRanges(
     (character) => {

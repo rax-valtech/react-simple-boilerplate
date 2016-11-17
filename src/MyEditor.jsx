@@ -1,32 +1,8 @@
-import React, { PropTypes } from "react";
+import React from "react";
 import Draft, { Editor, EditorState, convertFromRaw, CompositeDecorator, Entity } from "draft-js";
-import Immutable from "immutable";
 
 import LinkDecorator from "./Decorator.jsx";
-
-class MyCustomBlock extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <div className="my-custom-block">
-        {this.props.children}
-      </div>
-    );
-  }
-}
-
-MyCustomBlock.propTypes = {
-  children: PropTypes.any
-}
-
-const blockRenderMap = Immutable.Map({
-  "my-custom-block": {
-    element: "section",
-    wrapper: <MyCustomBlock />
-  }
-});
+import blockRenderMap from "./BlockRenderMap.js";
 
 const extendedBlockRenderMap = Draft.DefaultDraftBlockRenderMap.merge(blockRenderMap);
 
