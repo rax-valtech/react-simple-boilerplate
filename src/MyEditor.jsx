@@ -2,6 +2,8 @@ import React, { PropTypes } from "react";
 import Draft, { Editor, EditorState, convertFromRaw, CompositeDecorator, Entity } from "draft-js";
 import Immutable from "immutable";
 
+import LinkDecorator from "./Decorator.jsx";
+
 class MyCustomBlock extends React.Component {
   constructor(props) {
     super(props);
@@ -43,7 +45,7 @@ const rawContent = {
       inlineStyleRanges: [
         {
           length: 30,
-          offset: 15,
+          offset: 40,
           style: "BOLD"
         }
       ],
@@ -66,36 +68,6 @@ const rawContent = {
 };
 
 const blocks = convertFromRaw(rawContent);
-
-
-function findLinkEntities(contentBlock, callback) {
-  contentBlock.findEntityRanges(
-    (character) => {
-      const entityKey = character.getEntity();
-      return (
-        entityKey !== null &&
-        Entity.get(entityKey).getType() === "LINK"
-      );
-    },
-    callback
-  );
-}
-
-export const LinkDecoratorComponent = (props) => (
-  <a href={ Entity.get(props.entityKey).data.url }>
-    { props.children }
-  </a>
-);
-
-LinkDecoratorComponent.propTypes = {
-  children: PropTypes.any,
-  entityKey: PropTypes.any
-}
-
-const LinkDecorator = {
-  strategy: findLinkEntities,
-  component: LinkDecoratorComponent
-};
 
 const decorator = new CompositeDecorator([ LinkDecorator ]);
 
